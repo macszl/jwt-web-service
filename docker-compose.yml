@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  database:
+    image: 'mongo'
+    container_name: MONGO_CONTAINER
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=tki5
+      - MONGO_INITDB_DATABASE=database
+    volumes:
+      - ./db_init_script.js:/docker-entrypoint-initdb.d/db_init_script.js
+    ports:
+      - "6559:6559"
+
+
+
