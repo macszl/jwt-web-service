@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/schemas");
-const { getJwtSecretValue, getJwtExpirationTime } = require("../config/auth");
 
 const register = async (req, res, next) => {
   try {
@@ -32,8 +31,8 @@ const login = async (req, res, next) => {
     if (user) {
       const result = await bcrypt.compare(password, user.password);
       if (result) {
-        const token = jwt.sign({ name: user.name }, getJwtSecretValue(), {
-          expiresIn: getJwtExpirationTime(),
+        const token = jwt.sign({ name: user.name }, process.env.JWT_SECRET, {
+          expiresIn: "2m",
         });
         res.json({
           message: "Login successful!",

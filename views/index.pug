@@ -7,7 +7,8 @@ html
     .form
       if showLogin
         h2 Login
-        form(method="POST" action="/auth/login")
+        form(method="POST" action="/auth/login" onsubmit="return validateForm()")
+          div#error
           label(for="login") Login
           input(type="text" id="login" name="login" required)
           label(for="password") Password
@@ -16,7 +17,8 @@ html
           button(type="button" onclick="toggleForm()") Switch to register
       else
         h2 Register
-        form(method="POST" action="/auth/register")
+        form(method="POST" action="/auth/register" onsubmit="return validateForm()")
+          div#error
           label(for="login") Login
           input(type="text" id="login" name="login" required)
           label(for="email") Email
@@ -60,4 +62,22 @@ html
           form.querySelector('label[for="email-confirm"]').style.display = 'none';
           form.querySelector('label[for="password-confirm"]').style.display = 'none';
         }     
+      }
+      function validateForm() {
+        const email = document.getElementById('email').value;
+        const emailConfirm = document.getElementById('email-confirm').value;
+        const password = document.getElementById('password').value;
+        const passwordConfirm = document.getElementById('password-confirm').value;
+        const errorDiv = document.getElementById('error');
+        
+        if (email !== emailConfirm) {
+          errorDiv.innerHTML = 'Emails do not match';
+          return false;
+        } else if (password !== passwordConfirm) {
+          errorDiv.innerHTML = 'Passwords do not match';
+          return false;
+        } else {
+          errorDiv.innerHTML = '';
+          return true;
+        }
       }
