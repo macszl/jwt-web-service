@@ -8,6 +8,8 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
 var indexRouter = require("./routes/index");
+var resourceRouter = require("./routes/resource");
+var authRouter = require("./routes/auth");
 
 var app = express();
 
@@ -20,8 +22,8 @@ const resourceContent = {
 //database setup
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
 var db = mongoose.connection;
-db.on('error', (error) => console.error(error));
-db.once('open', () => console.log('Connected to Database'));
+db.on("error", (error) => console.error(error));
+db.once("open", () => console.log("Connected to Database"));
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -33,6 +35,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use("/resource", resourceRouter);
+app.use("/auth", authRouter);
 app.use("/", indexRouter);
 
 // catch 404 and forward to error handler

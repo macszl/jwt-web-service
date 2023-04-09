@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const { User } = require("../models/schemas");
 
 const register = async (req, res, next) => {
+  console.log("Registering user...");
   try {
     const hashedPass = await bcrypt.hash(req.body.password, 10);
     const user = new User({
@@ -14,10 +15,12 @@ const register = async (req, res, next) => {
       password: hashedPass,
     });
     await user.save();
+    console.log("User added successfully!");
     res.json({
       message: "User added successfully!",
     });
   } catch (error) {
+    console.log(error);
     res.json({
       message: "An error occurred!",
     });
@@ -25,6 +28,7 @@ const register = async (req, res, next) => {
 };
 
 const login = async (req, res, next) => {
+  console.log("Logging in user...");
   try {
     const { username, email, password } = req.body;
     const user = await User.findOne({ $or: [{ email }, { name: username }] });
@@ -36,7 +40,7 @@ const login = async (req, res, next) => {
         });
         res.json({
           message: "Login successful!",
-          token,
+          token: token,
         });
       } else {
         res.json({
