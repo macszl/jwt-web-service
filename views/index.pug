@@ -1,5 +1,63 @@
-extends layout
+html
+  head
+    title Login/Register Form
+    link(rel='stylesheet', href='/stylesheets/style.css')
 
-block content
-  h1= title
-  p Welcome to #{title}
+  body
+    .form
+      if showLogin
+        h2 Login
+        form(method="POST" action="/auth/login")
+          label(for="login") Login
+          input(type="text" id="login" name="login" required)
+          label(for="password") Password
+          input(type="password" id="password" name="password" required)
+          input(type="submit" value="Login")
+          button(type="button" onclick="toggleForm()") Switch to register
+      else
+        h2 Register
+        form(method="POST" action="/auth/register")
+          label(for="login") Login
+          input(type="text" id="login" name="login" required)
+          label(for="email") Email
+          input(type="email" id="email" name="email" required)
+          label(for="email-confirm") Confirm Email
+          input(type="email" id="email-confirm" name="email-confirm" required)
+          label(for="password") Password
+          input(type="password" id="password" name="password" required)
+          label(for="password-confirm") Confirm Password
+          input(type="password" id="password-confirm" name="password-confirm" required)
+          input(type="submit" value="Register")
+          button(type="button" onclick="toggleForm()") Switch to login
+
+    script.
+      function toggleForm() {
+        const form = document.querySelector('.form form');
+        const button = document.querySelector('.form button');
+        const submitInput = document.querySelector('.form input[type="submit"]');
+        if (form.action.includes('login')) {
+          form.action = '/auth/register';
+          document.querySelector('h2').textContent = 'Register';
+          button.textContent = 'Switch to login';
+          submitInput.textContent = 'Register';
+          submitInput.value = 'Register';
+          form.querySelector('#email').style.display = 'block';
+          form.querySelector('#email-confirm').style.display = 'block';
+          form.querySelector('#password-confirm').style.display = 'block';
+          form.querySelector('label[for="email"]').style.display = 'block';
+          form.querySelector('label[for="email-confirm"]').style.display = 'block';
+          form.querySelector('label[for="password-confirm"]').style.display = 'block';
+        } else {
+          form.action = '/auth/login';
+          document.querySelector('h2').textContent = 'Login';
+          button.textContent = 'Switch to register';
+          submitInput.textContent = 'Login';
+          submitInput.value = 'Login';
+          form.querySelector('#email').style.display = 'none';
+          form.querySelector('#email-confirm').style.display = 'none';
+          form.querySelector('#password-confirm').style.display = 'none';
+          form.querySelector('label[for="email"]').style.display = 'none';
+          form.querySelector('label[for="email-confirm"]').style.display = 'none';
+          form.querySelector('label[for="password-confirm"]').style.display = 'none';
+        }     
+      }
