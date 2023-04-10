@@ -7,6 +7,7 @@ html
     .form
       if showLogin
         h2 Login
+        h3 #{authErrorMessage}
         form(method="POST" action="/auth/signin" onsubmit="return validateForm()")
           div#error
           label(for="login") Login
@@ -17,6 +18,7 @@ html
           button(type="button" onclick="toggleForm()") Switch to register
       else
         h2 Register
+        h3 #{authErrorMessage}
         form(method="POST" action="/auth/signup" onsubmit="return validateForm()")
           div#error
           label(for="login") Login

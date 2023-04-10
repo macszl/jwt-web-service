@@ -5,6 +5,7 @@ const userModel = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   password: { type: String, required: true },
+  active: { type: Boolean, required: true },
 });
 
 const roleModel = new Schema({
@@ -18,7 +19,7 @@ const userRoleModel = new Schema({
 
 const User = mongoose.model("User", userModel);
 const Role = mongoose.model("Role", roleModel);
-const UserRole = mongoose.model("UserRole", userRoleModel);
+const UserRole = mongoose.model("User_Role", userRoleModel);
 
 exports.User = User;
 exports.Role = Role;

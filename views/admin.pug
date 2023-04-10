@@ -1,0 +1,27 @@
+html
+  head
+    title Login/Register Form
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body 
+    table
+    thead
+        tr
+        th Name
+        th Email
+        th Activated
+        th Action
+    tbody
+        each user in users
+        tr
+            td= user.name
+            td= user.email
+            td= user.active ? 'Yes' : 'No'
+            td
+            form(method='PATCH', action=`/activate/${user.id}`)
+                input(type='hidden', name='_method', value='PATCH')
+                if user.active
+                    button.deactivate-button(type='submit') Deactivate
+                else
+                    button.activate-button(type='submit') Activate  
+
+    

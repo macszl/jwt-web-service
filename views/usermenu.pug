@@ -1,0 +1,18 @@
+html
+  head
+    title Login/Register Form
+    link(rel='stylesheet', href='/stylesheets/style.css')
+
+  body
+    .form 
+        h2 Menu
+        form(method="GET" action="/resource/public")
+          input(type="submit" value="Public resource")
+        form(method="GET" action="/resource/user")
+          input(type="submit" value="User resource") 
+        form(method="GET" action="/resource/admin")
+          input(type="submit" value="Admin resource")
+        form(method="GET" action="/auth/signout")
+          input(type="submit" value="Logout")
+        
+
