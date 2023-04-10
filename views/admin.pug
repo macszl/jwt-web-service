@@ -3,25 +3,22 @@ html
     title Login/Register Form
     link(rel='stylesheet', href='/stylesheets/style.css')
   body 
-    table
-    thead
+    table.table-admin
+      thead.thead-admin
         tr
-        th Name
-        th Email
-        th Activated
-        th Action
-    tbody
+          th.col-admin Name
+          th.col-admin Email
+          th.col-admin Activated
+          th.col-admin Action
+      tbody.tbody-admin
         each user in users
-        tr
-            td= user.name
-            td= user.email
-            td= user.active ? 'Yes' : 'No'
-            td
-            form(method='PATCH', action=`/activate/${user.id}`)
-                input(type='hidden', name='_method', value='PATCH')
+          tr.row-admin
+            td.col-admin= user.name
+            td.col-admin= user.email
+            td.col-admin= user.active ? 'Yes' : 'No'
+            td.col-admin
+              form(method='POST', action=`/activate/${user.id}`)
                 if user.active
-                    button.deactivate-button(type='submit') Deactivate
+                  button.deactivate-button(type='submit') Deactivate
                 else
-                    button.activate-button(type='submit') Activate  
-
-    
+                  button.activate-button(type='submit') Activate

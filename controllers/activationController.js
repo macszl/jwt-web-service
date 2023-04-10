@@ -5,23 +5,30 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/schemas");
 
-const patch = (req, res, next) => {
+const activate = async (req, res, next) => {
   const { id } = req.params;
-  const { token } = req.body;
+
+  //const { token } = req.body;
   console.log("Activating user...");
 
   try {
     console.log("Verifying token...");
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    //const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("Token verified!");
 
     console.log("Finding user...");
-    const user = User.findOneAndUpdate({ _id: id }, { active: true });
+    const user = await User.findOneAndUpdate(
+      { _id: id },
+      { active: true }
+    ).exec();
     if (!user) {
       console.log("User not found!");
     } else {
       console.log("User activated successfully!");
     }
+    res.json({
+      message: "User activated successfully!",
+    });
   } catch (error) {
     console.log(error);
     res.json({
@@ -33,4 +40,4 @@ const patch = (req, res, next) => {
   }
 };
 
-module.exports = { register, login };
+module.exports = { activate };

@@ -24,7 +24,7 @@ input[type="text"],
 input[type="email"],
 input[type="password"],
 input[type="submit"],
-button {
+.loginFormButton {
   display: block;
   width: 100%;
   margin-bottom: 10px;
@@ -47,16 +47,16 @@ input[type="submit"] {
   margin-top: 48px;
 }
 input[type="submit"],
-button {
+.loginFormButton {
   background-color: #4caf50;
   color: #fff;
   cursor: pointer;
 }
-button {
+.loginFormButton {
   background-color: #008cba;
 }
 input[type="submit"]:hover,
-button:hover {
+.loginFormButton:hover {
   background-color: #3e8e41;
 }
 
@@ -64,41 +64,77 @@ button:hover {
   color: #f00;
 }
 
-table {
-  width: 100%;
+.table-admin {
+  font-family: Arial, sans-serif;
   border-collapse: collapse;
+  width: 100%;
 }
 
-thead th {
+.col-admin {
+  padding: 1rem;
   text-align: left;
-  background-color: #f2f2f2;
-  border-bottom: 1px solid #ddd;
-  padding: 8px;
 }
 
-tbody tr:nth-child(even) {
-  background-color: #f2f2f2;
+.col-admin:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
 }
 
-tbody td {
-  padding: 8px;
+.col-admin:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 
-button.activate-button,
-button.deactivate-button {
+.thead-admin th {
+  background-color: #f1f1f1;
+  color: #333;
+  font-weight: bold;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.row-admin:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.row-admin:hover {
+  background-color: #ddd;
+}
+
+.activate-button,
+.deactivate-button {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: #fff;
   background-color: #4caf50;
   border: none;
-  color: white;
-  padding: 8px 16px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
+  border-radius: 4px;
   cursor: pointer;
+  padding: 8px 12px;
+  margin-right: 8px;
+  transition: background-color 0.3s ease;
 }
 
-table {
-  height: 200px;
-  overflow: auto;
+.activate-button:hover {
+  background-color: #3e8e41;
+}
+
+.deactivate-button:hover {
+  background-color: #c62828;
+}
+
+@media (max-width: 768px) {
+  .col-admin {
+    font-size: 14px;
+  }
+
+  .thead-admin th {
+    font-size: 14px;
+  }
+
+  .activate-button,
+  .deactivate-button {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
 }

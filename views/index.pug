@@ -14,8 +14,8 @@ html
           input(type="text" id="login" name="login" required)
           label(for="password") Password
           input(type="password" id="password" name="password" required)
-          input(type="submit" value="Login")
-          button(type="button" onclick="toggleForm()") Switch to register
+          input(type="submit" class="loginFormButton" value="Login")
+          button(type="button" class="loginFormButton" onclick="toggleForm()") Switch to register
       else
         h2 Register
         h3 #{authErrorMessage}
@@ -31,8 +31,8 @@ html
           input(type="password" id="password" name="password" required)
           label(for="password-confirm") Confirm Password
           input(type="password" id="password-confirm" name="password-confirm" required)
-          input(type="submit" value="Register")
-          button(type="button" onclick="toggleForm()") Switch to login
+          input(type="submit" class="loginFormButton" value="Register")
+          button(type="button" class="loginFormButton" onclick="toggleForm()") Switch to login
 
     script.
       function toggleForm() {
