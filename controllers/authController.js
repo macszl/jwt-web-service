@@ -67,4 +67,31 @@ const login = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login };
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    console.log(err);
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}
+
+function authenticateTokenAdmin(req, res, next) {
+  //...
+}
+
+function generateAccessToken(user) {
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "2m" });
+}
+
+module.exports = {
+  register,
+  login,
+  authenticateToken,
+  authenticateTokenAdmin,
+  generateAccessToken,
+};
