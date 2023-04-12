@@ -2,8 +2,8 @@ function toggleForm() {
   const form = document.querySelector(".form form");
   const button = document.querySelector(".form button");
   const submitInput = document.querySelector('.form input[type="submit"]');
-  if (form.action.includes("signin")) {
-    form.action = "/auth/signup";
+  if (document.querySelector("h2").textContent === "Login") {
+    form.setAttribute("onsubmit", "return sendRegisterData()");
     document.querySelector("h2").textContent = "Register";
     button.textContent = "Switch to login";
     submitInput.textContent = "Register";
@@ -15,7 +15,7 @@ function toggleForm() {
     form.querySelector('label[for="email-confirm"]').style.display = "block";
     form.querySelector('label[for="password-confirm"]').style.display = "block";
   } else {
-    form.action = "/auth/signin";
+    form.setAttribute("onsubmit", "return sendLoginData()");
     document.querySelector("h2").textContent = "Login";
     button.textContent = "Switch to register";
     submitInput.textContent = "Login";
@@ -31,7 +31,9 @@ function toggleForm() {
     form.querySelector('label[for="password-confirm"]').style.display = "none";
   }
 }
-function validateForm() {
+function validateForm(event) {
+  event.preventDefault();
+
   const h2Content = document.querySelector("h2").textContent;
   console.log(h2Content);
   if (h2Content === "Login") {
@@ -44,6 +46,8 @@ function validateForm() {
   const passwordConfirm = document.getElementById("password-confirm").value;
   const errorDiv = document.getElementById("error");
 
+  errorDiv.innerHTML = "";
+
   if (email !== emailConfirm) {
     errorDiv.innerHTML = "Emails do not match";
     return false;
@@ -52,6 +56,82 @@ function validateForm() {
     return false;
   } else {
     errorDiv.innerHTML = "";
+
     return true;
+  }
+}
+
+function sendRegisterData() {
+  if (!validateForm(event)) {
+    return;
+  }
+
+  let xhr = new XMLHttpRequest();
+  const errorDiv = document.getElementById("error");
+
+  xhr.open("POST", "/auth/signup", true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        console.log("Registration successful.");
+        errorDiv.innerHTML =
+          "Registration successful. Please wait until your account is activated.";
+      } else {
+        console.error(xhr.statusText);
+        errorDiv.innerHTML = "Registration unsuccessful.";
+      }
+    }
+  };
+  xhr.send(
+    JSON.stringify({
+      login: document.getElementById("login").value,
+      email: document.getElementById("email").value,
+      password: document.getElementById("password").value,
+    })
+  );
+  return true;
+}
+
+function sendLoginData() {
+  if (!validateForm(event)) {
+    return;
+  }
+
+  let xhr = new XMLHttpRequest();
+  const errorDiv = document.getElementById("error");
+
+  xhr.open("POST", "/auth/signin", true);
+  xhr = addTokenToHeader(xhr);
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+      if ((xhr.status >= 200 && xhr.status <= 204) || xhr.status === 0) {
+        const response = JSON.parse(xhr.responseText);
+        localStorage.setItem("token", response.token);
+        console.log("Token saved to local storage.");
+      } else {
+        console.error(xhr.statusText);
+        errorDiv.innerHTML = "Login unsuccessful.";
+      }
+    }
+  };
+
+  xhr.send(
+    JSON.stringify({
+      login: document.getElementById("login").value,
+      password: document.getElementById("password").value,
+    })
+  );
+  return true;
+}
+
+function addTokenToHeader(xhr) {
+  const token = localStorage.getItem("token");
+  if (token) {
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    return xhr;
   }
 }

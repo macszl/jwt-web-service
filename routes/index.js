@@ -11,7 +11,7 @@ router.get("/", function (req, res, next) {
   res.render("index", { title: "Express", showLogin: false });
 });
 
-router.get("/admin", authenticateToken, async function (req, res, next) {
+router.get("/admin", authenticateTokenAdmin, async function (req, res, next) {
   const usersCollection = await User.find();
   console.log(usersCollection);
   res.render("admin", { users: usersCollection });

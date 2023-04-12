@@ -8,7 +8,7 @@ html
       if showLogin
         h2 Login
         h3 #{authErrorMessage}
-        form(method="POST" action="/auth/signin" onsubmit="return validateForm()")
+        form(method="POST"  onsubmit="return sendLoginData()")
           div#error
           label(for="login") Login
           input(type="text" id="login" name="login" required)
@@ -19,7 +19,7 @@ html
       else
         h2 Register
         h3 #{authErrorMessage}
-        form(method="POST" action="/auth/signup" onsubmit="return validateForm()")
+        form(method="POST" onsubmit="return sendRegisterData()")
           div#error
           label(for="login") Login
           input(type="text" id="login" name="login" required)
@@ -34,6 +34,5 @@ html
           input(type="submit" class="loginFormButton" value="Register")
           button(type="button" class="loginFormButton" onclick="toggleForm()") Switch to login
 
-    script
-      link(rel='script', href='/javascripts/script.js')
+    script(src='/javascripts/script.js')
       
