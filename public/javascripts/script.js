@@ -3,6 +3,7 @@ function toggleForm() {
   const button = document.querySelector(".form button");
   const submitInput = document.querySelector('.form input[type="submit"]');
   if (document.querySelector("h2").textContent === "Login") {
+    // switch to register
     form.setAttribute("onsubmit", "return sendRegisterData()");
     document.querySelector("h2").textContent = "Register";
     button.textContent = "Switch to login";
@@ -15,6 +16,7 @@ function toggleForm() {
     form.querySelector('label[for="email-confirm"]').style.display = "block";
     form.querySelector('label[for="password-confirm"]').style.display = "block";
   } else {
+    // switch to login
     form.setAttribute("onsubmit", "return sendLoginData()");
     document.querySelector("h2").textContent = "Login";
     button.textContent = "Switch to register";
@@ -22,10 +24,13 @@ function toggleForm() {
     submitInput.value = "Login";
     form.querySelector("#email").style.display = "none";
     form.querySelector("#email").required = false;
+    form.querySelector("#email").value = "";
     form.querySelector("#email-confirm").style.display = "none";
     form.querySelector("#email-confirm").required = false;
+    form.querySelector("#email-confirm").value = "";
     form.querySelector("#password-confirm").style.display = "none";
     form.querySelector("#password-confirm").required = false;
+    form.querySelector("#password-confirm").value = "";
     form.querySelector('label[for="email"]').style.display = "none";
     form.querySelector('label[for="email-confirm"]').style.display = "none";
     form.querySelector('label[for="password-confirm"]').style.display = "none";
@@ -60,8 +65,7 @@ function validateForm(event) {
     return true;
   }
 }
-
-function sendRegisterData() {
+-function sendRegisterData() {
   if (!validateForm(event)) {
     return;
   }
@@ -91,8 +95,10 @@ function sendRegisterData() {
       password: document.getElementById("password").value,
     })
   );
+
+  
   return true;
-}
+};
 
 function sendLoginData() {
   if (!validateForm(event)) {
@@ -103,7 +109,6 @@ function sendLoginData() {
   const errorDiv = document.getElementById("error");
 
   xhr.open("POST", "/auth/signin", true);
-  xhr = addTokenToHeader(xhr);
 
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
@@ -127,11 +132,37 @@ function sendLoginData() {
   return true;
 }
 
+function getResource(getPath) {
+  let xhr = new XMLHttpRequest();
+
+  xhr = addTokenToHeader(xhr);
+  if (!xhr) {
+    console.log("No token found.");
+    return;
+  }
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+      if ((xhr.status >= 200 && xhr.status <= 204) || xhr.status === 0) {
+        console.log("Successfuly accessed resource.");
+      } else {
+        console.error(xhr.statusText);
+      }
+    }
+  };
+
+  xhr.open("GET", getPath, true);
+
+  xhr.send();
+}
+
 function addTokenToHeader(xhr) {
+  console.log("addTokenToHeader called");
   const token = localStorage.getItem("token");
   if (token) {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    console.log("Success in addTokenHeader: " + xhr);
     return xhr;
   }
 }

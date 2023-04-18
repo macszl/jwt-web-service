@@ -20,10 +20,10 @@ const register = async (req, res, next) => {
       active: false,
     });
     //check if user already exists:
-    const userExist = await User.findOne(user);
+    const userExist = await User.findOne({ name: user.name });
     if (userExist) {
       console.log("user exist");
-      res.json({ message: "User already exists!" });
+      throw new Error("User already exists!");
     }
 
     console.log("Saving user...");
@@ -34,12 +34,12 @@ const register = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
+    res.setHeader("Location", "/");
+    res.setHeader("Refresh", "4; url=/");
+    res.status(302);
     res.json({
       message: "An error occurred!",
     });
-    res.setHeader("Location", "/");
-    res.setHeader("Refresh", "4; url=/");
-    res.status(302).end();
   }
 };
 
@@ -105,6 +105,8 @@ function authenticateTokenAdmin(req, res, next) {
     req.user = user;
     next();
   });
+
+  
 }
 
 function generateAccessToken(user) {
