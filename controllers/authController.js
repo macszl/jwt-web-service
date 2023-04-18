@@ -29,6 +29,8 @@ const register = async (req, res, next) => {
     console.log("Saving user...");
     await user.save();
     console.log("User added successfully!");
+
+    res.status(201);
     res.json({
       message: "User added successfully!",
     });
@@ -36,7 +38,7 @@ const register = async (req, res, next) => {
     console.log(error);
     res.setHeader("Location", "/");
     res.setHeader("Refresh", "4; url=/");
-    res.status(302);
+    res.status(500);
     res.json({
       message: "An error occurred!",
     });
@@ -45,34 +47,47 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   console.log("Logging in user...");
+  console.log(req.body);
   try {
     const { login, password } = req.body;
+    console.log("Received password: " + password);
+    console.log("Received login: " + login);
+
     const user = await User.findOne({ name: login });
     if (user) {
       const result = await bcrypt.compare(password, user.password);
       if (result) {
         const token = generateAccessToken({ name: user.name, isAdmin: false });
+        res.status(200);
+        console.log("User login successful!");
         res.json({
           message: "Login successful!",
           token: token,
         });
       } else if (result && login === "admin") {
         const token = generateAccessToken({ name: user.name, isAdmin: true });
+        res.status(200);
+        console.log("Admin login successful!");
         res.json({
           message: "Login successful!",
           token: token,
         });
       } else {
+        res.status(401);
+        console.log("Password does not match!");
         res.json({
           message: "Password does not match!",
         });
       }
     } else {
+      res.status(404);
+      console.log("User not found!");
       res.json({
         message: "User not found!",
       });
     }
   } catch (error) {
+    res.status(500);
     res.json({
       error,
     });
@@ -81,32 +96,47 @@ const login = async (req, res, next) => {
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  let token = authHeader && authHeader.split(" ")[1];
 
-  if (token == null) return res.sendStatus(401);
+  if (!token && req.cookies && req.cookies.my_cookie_name) {
+    token = req.cookies.my_cookie_name.split(" ")[1];
+  }
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    console.log(err);
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
+  if (!token) return res.sendStatus(401);
+  try {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      console.log(err);
+      if (err) return res.sendStatus(403);
+      req.user = user;
+      next();
+    });
+  } catch (error) {
+    //redirect to login page
+    res.redirect("/");
+  }
 }
 
 function authenticateTokenAdmin(req, res, next) {
   const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  let token = authHeader && authHeader.split(" ")[1];
 
-  if (token == null) return res.sendStatus(401);
+  if (!token && req.cookies && req.cookies.my_cookie_name) {
+    token = req.cookies.my_cookie_name.split(" ")[1];
+  }
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    console.log(err);
-    if (err || !user.isAdmin) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
+  if (!token) return res.sendStatus(401);
 
-  
+  try {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      console.log(err);
+      if (err || !user.isAdmin) return res.sendStatus(403);
+      req.user = user;
+      next();
+    });
+  } catch {
+    //redirect to login page
+    res.redirect("/");
+  }
 }
 
 function generateAccessToken(user) {

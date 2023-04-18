@@ -15,12 +15,6 @@ var menuRouter = require("./routes/menu");
 
 var app = express();
 
-const resourceContent = {
-  public: "You are currently viewing public content!",
-  user: "You are currently viewing user content!",
-  admin: "You are currently viewing admin content!",
-};
-
 //database setup
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
 var db = mongoose.connection;

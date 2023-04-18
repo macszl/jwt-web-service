@@ -8,7 +8,7 @@ html
       if showLogin
         h2 Login
         h3 #{authErrorMessage}
-        form(method="POST"  onsubmit="return sendLoginData()")
+        form(method="POST" onsubmit="event.preventDefault(); return sendLoginData(event)")
           div#error
           label(for="login") Login
           input(type="text" id="login" name="login" required)
@@ -19,7 +19,7 @@ html
       else
         h2 Register
         h3 #{authErrorMessage}
-        form(method="POST" onsubmit="return sendRegisterData()")
+        form(method="POST" onsubmit="event.preventDefault(); return sendRegisterData(event)")
           div#error
           label(for="login") Login
           input(type="text" id="login" name="login" required)

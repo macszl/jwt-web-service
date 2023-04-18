@@ -4,7 +4,7 @@ function toggleForm() {
   const submitInput = document.querySelector('.form input[type="submit"]');
   if (document.querySelector("h2").textContent === "Login") {
     // switch to register
-    form.setAttribute("onsubmit", "return sendRegisterData()");
+    form.setAttribute("onsubmit", "return sendRegisterData(event)");
     document.querySelector("h2").textContent = "Register";
     button.textContent = "Switch to login";
     submitInput.textContent = "Register";
@@ -17,7 +17,7 @@ function toggleForm() {
     form.querySelector('label[for="password-confirm"]').style.display = "block";
   } else {
     // switch to login
-    form.setAttribute("onsubmit", "return sendLoginData()");
+    form.setAttribute("onsubmit", "return sendLoginData(event)");
     document.querySelector("h2").textContent = "Login";
     button.textContent = "Switch to register";
     submitInput.textContent = "Login";
@@ -36,6 +36,7 @@ function toggleForm() {
     form.querySelector('label[for="password-confirm"]').style.display = "none";
   }
 }
+
 function validateForm(event) {
   event.preventDefault();
 
@@ -65,7 +66,7 @@ function validateForm(event) {
     return true;
   }
 }
--function sendRegisterData() {
+function sendRegisterData(event) {
   if (!validateForm(event)) {
     return;
   }
@@ -78,7 +79,7 @@ function validateForm(event) {
 
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
-      if (xhr.status === 200) {
+      if (xhr.status >= 200 && xhr.status <= 204) {
         console.log("Registration successful.");
         errorDiv.innerHTML =
           "Registration successful. Please wait until your account is activated.";
@@ -96,11 +97,10 @@ function validateForm(event) {
     })
   );
 
-  
   return true;
-};
+}
 
-function sendLoginData() {
+function sendLoginData(event) {
   if (!validateForm(event)) {
     return;
   }
@@ -109,13 +109,19 @@ function sendLoginData() {
   const errorDiv = document.getElementById("error");
 
   xhr.open("POST", "/auth/signin", true);
+  xhr.setRequestHeader("Content-Type", "application/json");
 
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
       if ((xhr.status >= 200 && xhr.status <= 204) || xhr.status === 0) {
         const response = JSON.parse(xhr.responseText);
-        localStorage.setItem("token", response.token);
+        console.log(response);
+        createCookieWithToken(response.token);
         console.log("Token saved to local storage.");
+
+        setTimeout(function () {
+          window.location.href = "/menu";
+        }, 3000);
       } else {
         console.error(xhr.statusText);
         errorDiv.innerHTML = "Login unsuccessful.";
@@ -129,40 +135,18 @@ function sendLoginData() {
       password: document.getElementById("password").value,
     })
   );
+
   return true;
 }
 
-function getResource(getPath) {
-  let xhr = new XMLHttpRequest();
+function createCookieWithToken(token) {
+  // Set the cookie expiration date
+  const now = new Date();
+  const expirationDate = new Date(now.getTime() + 3600 * 1000); // 1 hour from now
 
-  xhr = addTokenToHeader(xhr);
-  if (!xhr) {
-    console.log("No token found.");
-    return;
-  }
+  // Set the cookie value
+  const cookieValue = `Bearer ${token}`;
 
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4) {
-      if ((xhr.status >= 200 && xhr.status <= 204) || xhr.status === 0) {
-        console.log("Successfuly accessed resource.");
-      } else {
-        console.error(xhr.statusText);
-      }
-    }
-  };
-
-  xhr.open("GET", getPath, true);
-
-  xhr.send();
-}
-
-function addTokenToHeader(xhr) {
-  console.log("addTokenToHeader called");
-  const token = localStorage.getItem("token");
-  if (token) {
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.setRequestHeader("Authorization", `Bearer ${token}`);
-    console.log("Success in addTokenHeader: " + xhr);
-    return xhr;
-  }
+  // Set the cookie to be accessible from any URL within your website
+  document.cookie = `my_cookie_name=${cookieValue}; expires=${expirationDate.toUTCString()}; path=/`;
 }
