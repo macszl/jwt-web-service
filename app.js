@@ -13,6 +13,9 @@ var authRouter = require("./routes/auth");
 var activateRouter = require("./routes/activate");
 var menuRouter = require("./routes/menu");
 
+const { UserRole, User, Role } = require("./models/schemas");
+const bcrypt = require("bcryptjs");
+
 var app = express();
 
 //database setup
@@ -20,6 +23,61 @@ mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
 var db = mongoose.connection;
 db.on("error", (error) => console.error(error));
 db.once("open", () => console.log("Connected to Database"));
+
+const hashedPass = bcrypt.hashSync("admin", 10);
+
+const user = new User({
+  name: "admin",
+  email: "admin@admin.pl",
+  password: hashedPass,
+  active: true,
+});
+
+//save admin user to database if not exists
+
+User.findOne({ name: "admin" })
+  .exec()
+  .then((res) => {
+    if (!res) {
+      const res = user.save();
+    }
+  });
+
+const userEmail = "admin@admin.pl"; // replace with the user's email
+const roleName = "admin"; // replace with the role name
+
+Promise.all([
+  User.findOne({ email: userEmail }),
+  Role.findOne({ name: roleName }),
+])
+  .then(([user, role]) => {
+    if (!user) {
+      throw new Error(`User with email ${userEmail} not found`);
+    }
+    if (!role) {
+      throw new Error(`Role with name ${roleName} not found`);
+    }
+
+    const userRole = new UserRole({
+      user: user._id,
+      role: role._id,
+    });
+
+    const id = user._id;
+    if (
+      User.findById(id)
+        .exec()
+        .then((res) => {
+          if (!res) {
+            userRole.save();
+          }
+        })
+    )
+      return null;
+  })
+  .catch((error) => {
+    console.error(error);
+  });
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));

@@ -30,6 +30,42 @@ const register = async (req, res, next) => {
     await user.save();
     console.log("User added successfully!");
 
+    const userEmail = user.email; 
+    const roleName = "user";
+
+    Promise.all([
+      User.findOne({ email: userEmail }),
+      Role.findOne({ name: roleName }),
+    ])
+      .then(([user, role]) => {
+        if (!user) {
+          throw new Error(`User with email ${userEmail} not found`);
+        }
+        if (!role) {
+          throw new Error(`Role with name ${roleName} not found`);
+        }
+
+        const userRole = new UserRole({
+          user: user._id,
+          role: role._id,
+        });
+
+        const id = user._id;
+        if (
+          User.findById(id)
+            .exec()
+            .then((res) => {
+              if (!res) {
+                userRole.save();
+              }
+            })
+        )
+          return null;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
     res.status(201);
     res.json({
       message: "User added successfully!",
